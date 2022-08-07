@@ -1,0 +1,23 @@
+<html>
+  <head>
+    <title>Express</title>
+    <link rel="stylesheet" href="/stylesheets/style.css">
+    <script src="https://cdn.tailwindcss.com"></script>
+  </head>
+  <body onload="main()">
+    <header class="flex justify-end items-center">
+      <nav class="flex gap-4">
+        <div id="userName"></div>
+        <a onclick="logout()" href="/auth/logout">Logout</a>
+      </nav>
+    </header>
+    <script>
+      const main = async () => {
+        const userResp = await fetch('/auth/me');
+        const user = await userResp.json();
+        console.log({user})
+        document.getElementById('userName').textContent = user.username;
+      }
+    </script>
+  </body>
+</html>
