@@ -2,13 +2,16 @@ var express = require("express");
 var path = require("path");
 var cookieParser = require("cookie-parser");
 var logger = require("morgan");
+require("./dbConnect")();
 const session = require("express-session");
 const { createClient } = require("redis");
 const redisClient = createClient({ legacyMode: true });
 const connectRedis = require("connect-redis");
 
 var indexRouter = require("./routes/index");
-var authRouter = require("./routes/auth");
+var authRouter = require("./routes/user");
+const languagesRouter = require("./routes/languages");
+const favoriteLanguageRouter = require("./routes/favoriteLanguage");
 
 var app = express();
 
@@ -40,6 +43,8 @@ app.use(cookieParser());
 
 app.use("/", indexRouter);
 app.use("/auth", authRouter);
+app.use("/languages", languagesRouter);
+app.use("/favorite-language", favoriteLanguageRouter);
 
 app.use(express.static(path.join(__dirname, "public")));
 

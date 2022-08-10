@@ -1,0 +1,19 @@
+{
+  "C": "c",
+  "C++": "cpp",
+  "C#": "csharp",
+  "CSS": "css",
+  "Go": "go",
+  "Haskell": "haskell",
+  "HTML": "html",
+  "Java": "java",
+  "Javascript": "javascript",
+  "Kotlin": "kotlin",
+  "Lua": "lua",
+  "PHP": "php",
+  "Python": "python",
+  "R": "r",
+  "Ruby": "ruby",
+  "Swift": "swift",
+  "Typescript": "typescript"
+}

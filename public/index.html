@@ -1,22 +1,125 @@
 <html>
   <head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Express</title>
     <link rel="stylesheet" href="/stylesheets/style.css">
     <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+      html, body {
+        padding: 0;
+        margin: 0;
+      }
+    </style>
   </head>
-  <body onload="main()">
-    <header class="flex justify-end items-center">
-      <nav class="flex gap-4">
+  <body onload="main()" class="flex min-w-100 min-h-[100vh] flex-col">
+    <header class="flex items-center bg-purple-700 h-16 text-white px-8">
+      <nav class="flex justify-between w-full items-center">
         <div id="userName"></div>
-        <a onclick="logout()" href="/auth/logout">Logout</a>
+        <a class="px-2 py-1.5 bg-transparent rounded hover:shadow-md cursor-pointer hover:bg-white active:bg-slate-100 active:text-purple-700   hover:text-purple-700 transition-all ease-in duration-100" onclick="logout()" href="/auth/logout">Logout</a>
       </nav>
     </header>
+    <main class="hidden flex-col flex-1 pb-20 justify-center items-center px-4 lg:px-0">
+      <div class="flex mb-8 gap-4 flex-col favorite-language justify-center items-center">
+        <div class="icon">
+          <img class="w-32 h-32 object-contain" />
+        </div>
+        <div class="name"></div>
+      </div>
+      <div class="flex flex-col md:flex-row gap-4 justify-center select-favorite-language">
+        <div class="xl:w-96">
+          <select class="form-select appearance-none
+            block
+            w-full
+            px-3
+            py-1.5
+            text-base
+            font-normal
+            text-gray-700
+            bg-white bg-clip-padding bg-no-repeat
+            border border-solid border-gray-300
+            rounded
+            transition
+            ease-in-out
+            m-0
+            focus:text-gray-700 focus:bg-white focus:border-purple-600 focus:outline-none" aria-label="Default select example">
+              <option selected value="">Choose your favorite language</option>
+              
+          </select>
+        </div>
+        <button id="markAsFavBtn" type="button" class="inline-block px-6 py-2.5 disabled:bg-slate-50 disabled:text-slate-500 disabled:border-slate-200 disabled:shadow-none bg-purple-600 text-white font-medium text-xs leading-tight uppercase rounded shadow-md hover:bg-purple-700 hover:shadow-lg focus:bg-purple-700 focus:shadow-lg focus:outline-none focus:ring-0 active:bg-purple-800 active:shadow-lg transition duration-150 ease-in-out">Mark as Favorite</button>
+      </div>
+    </main>
     <script>
       const main = async () => {
-        const userResp = await fetch('/auth/me');
-        const user = await userResp.json();
-        console.log({user})
-        document.getElementById('userName').textContent = user.username;
+        let [user, favoriteLang, languages] = await Promise.allSettled([
+          fetch('/auth/me').then(res => res.json()),
+          fetch('/favorite-language').then(res => res.json()),
+          fetch('/languages').then(res => res.json())
+        ])
+        document.getElementById('userName').textContent = `Hey, ${user.value.username}`;
+
+        const selectBox = document.querySelector('.select-favorite-language select');
+        const markAsFavBtn = document.querySelector('#markAsFavBtn');
+        languages = languages.value?.languages;
+        languages.forEach((language) => {
+          const optionEl = document.createElement('OPTION');
+          optionEl.setAttribute('value', language._id);
+          optionEl.textContent = language.name;
+          selectBox.appendChild(optionEl)
+        });
+        favoriteLang = favoriteLang.value?.language
+        if (favoriteLang) {
+          selectBox.value = favoriteLang._id;
+        }
+        setLanguagePreview(favoriteLang);
+        markAsFavBtn.setAttribute('disabled', true)
+        document.querySelector('main').classList.remove('hidden');
+        document.querySelector('main').classList.add('flex');
+
+        markAsFavBtn.addEventListener('click', async () => {
+          const selectedLanguageId = selectBox.value;
+          if (!selectedLanguageId) {
+            return alert('Please select a language first');
+          }
+          const favLang = await fetch('/favorite-language', {
+            method: 'POST',
+            body: JSON.stringify({
+              languageId: selectedLanguageId
+            }),
+            headers: {
+              'Accept': 'application/json',
+              'Content-Type': 'application/json'
+            }
+          }).catch(e => console.error);
+          alert(`Marked as favorite`)
+          markAsFavBtn.setAttribute('disabled', true)
+        })
+        selectBox.addEventListener('change', async () => {
+          if (!selectBox.value) {
+            return markAsFavBtn.setAttribute('disabled', true);
+          }
+          const selectedLang = languages.find(lang => lang._id === selectBox.value);
+          if (selectedLang) {
+            setLanguagePreview(selectedLang);
+          }
+          
+          (favoriteLang && favoriteLang._id === selectedLang._id) ? markAsFavBtn.setAttribute('disabled', true) : markAsFavBtn.removeAttribute('disabled')
+        });
+
+        function setLanguagePreview(language) {
+          const favLangWrapper = document.querySelector('.favorite-language');
+          if (!language) {
+            return favLangWrapper.classList.add('hidden');
+          }
+          if (favLangWrapper.classList.contains('hidden')) {
+            favLangWrapper.classList.remove('hidden');
+          }
+          const {iconUrl, name} = language;
+          favLangWrapper.querySelector('.icon img').setAttribute('src', iconUrl);
+          favLangWrapper.querySelector('.name').textContent = name;
+        }
       }
     </script>
   </body>
