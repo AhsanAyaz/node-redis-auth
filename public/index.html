@@ -20,7 +20,7 @@
         <a class="px-2 py-1.5 bg-transparent rounded hover:shadow-md cursor-pointer hover:bg-white active:bg-slate-100 active:text-purple-700   hover:text-purple-700 transition-all ease-in duration-100" onclick="logout()" href="/auth/logout">Logout</a>
       </nav>
     </header>
-    <main class="hidden flex-col flex-1 pb-20 justify-center items-center px-4 lg:px-0">
+    <main class="invisible flex-col flex-1 pb-20 justify-center items-center px-4 lg:px-0">
       <div class="flex mb-8 gap-4 flex-col favorite-language justify-center items-center">
         <div class="icon">
           <img class="w-32 h-32 object-contain" />
@@ -80,7 +80,7 @@
         }
         setLanguagePreview(favoriteLang);
         markAsFavBtn.setAttribute('disabled', true)
-        document.querySelector('main').classList.remove('hidden');
+        document.querySelector('main').classList.remove('invisible');
         document.querySelector('main').classList.add('flex');
 
         markAsFavBtn.addEventListener('click', async () => {
@@ -116,10 +116,10 @@
         function setLanguagePreview(language) {
           const favLangWrapper = document.querySelector('.favorite-language');
           if (!language) {
-            return favLangWrapper.classList.add('hidden');
+            return favLangWrapper.classList.add('invisible');
           }
-          if (favLangWrapper.classList.contains('hidden')) {
-            favLangWrapper.classList.remove('hidden');
+          if (favLangWrapper.classList.contains('invisible')) {
+            favLangWrapper.classList.remove('invisible');
           }
           const {iconUrl, name} = language;
           favLangWrapper.querySelector('.icon img').setAttribute('src', iconUrl);
