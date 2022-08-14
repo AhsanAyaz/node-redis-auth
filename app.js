@@ -9,7 +9,7 @@ const redisClient = createClient({ legacyMode: true });
 const connectRedis = require("connect-redis");
 
 var indexRouter = require("./routes/index");
-var authRouter = require("./routes/user");
+var authRouter = require("./routes/auth");
 const languagesRouter = require("./routes/languages");
 const favoriteLanguageRouter = require("./routes/favoriteLanguage");
 

@@ -2,18 +2,6 @@ const path = require("path");
 const express = require("express");
 const router = express.Router();
 const User = require("../models/User");
-/* GET login page. */
-router.get("/login", function (req, res, next) {
-  res.sendFile("login.html", {
-    root: path.join(__dirname, "../public"),
-  });
-});
-
-router.get("/register", function (req, res, next) {
-  res.sendFile("register.html", {
-    root: path.join(__dirname, "../public"),
-  });
-});
 
 router.post("/register", (req, res) => {
   const { username, password } = req.body;
@@ -75,14 +63,12 @@ router.get("/me", async (req, res) => {
   res.status(200).json(user);
 });
 
-router.post("/language", async (req, res) => {});
-
 router.get("/logout", (req, res) => {
   req.session.destroy((err) => {
     if (err) {
       return console.log(err);
     }
-    res.redirect("/auth/login");
+    res.redirect("/login");
   });
 });
 
